@@ -1,0 +1,242 @@
+<title>Love Is… Shared Lunch</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: same 9:16 player as the pilot, with the episode script stacked underneath */
+:root{--bg:#f1ebfa;--ink:#4a3b5c;--panel:#ffffff;--accent:#e8658a;--line:#d9cdea;--muted:#7d6b94;
+--font:"Fredoka","Trebuchet MS",system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d1a2b;--ink:#efe8fb;--panel:#2b2640;--accent:#ff8fb1;--line:#443d63;--muted:#b9acd2;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1d1a2b;--ink:#efe8fb;--panel:#2b2640;--accent:#ff8fb1;--line:#443d63;--muted:#b9acd2;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font)}
+main{display:flex;flex-direction:column;align-items:center;padding-block:18px 32px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:1.25rem;font-weight:600;margin:0 0 2px;text-align:center;text-wrap:balance}
+h2{font-size:1.05rem;font-weight:600;margin:0}
+.sub{margin:0 0 14px;font-size:.9rem;color:var(--muted);text-align:center}
+.stage{position:relative;width:min(100%,340px);max-width:100%;aspect-ratio:9/16;border-radius:22px;overflow:hidden;background:#cfe3f5;box-shadow:0 10px 30px rgba(74,59,92,.25)}
+.stage svg{position:absolute;inset:0;width:100%;height:100%}
+.tag{position:absolute;top:12px;left:14px;font-size:15px;font-weight:600;color:#7d6b94;z-index:3}
+.tag b{color:#e8658a}
+.cap{position:absolute;left:0;right:0;bottom:22px;text-align:center;font-size:19px;font-weight:500;color:#6b5a82;z-index:3;padding:0 16px;min-height:28px}
+.card{position:absolute;inset:0;z-index:4;background:#fff1f5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;opacity:0;pointer-events:none;transition:opacity .6s;color:#7a5a74;padding:24px}
+.card.on{opacity:1}
+.card .ep{font-size:15px;letter-spacing:.06em;text-transform:uppercase;opacity:.75}
+.card .big{font-size:30px;font-weight:600;line-height:1.15}
+.card .big b{color:#e8658a}
+.card .next{font-size:15px;opacity:.8}
+.bar{position:absolute;left:0;bottom:0;height:5px;background:#e8658a;z-index:5;width:0}
+.ctl{width:min(100%,340px);margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+button{font:inherit;font-weight:500;border:0;border-radius:999px;padding:10px 20px;background:var(--accent);color:#fff;cursor:pointer}
+button.alt{background:var(--panel);color:var(--ink);border:1.5px solid var(--line)}
+button.sm{padding:5px 12px;font-size:.8rem}
+button:focus-visible,input:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+input[type=range]{flex:1 1 100%;accent-color:var(--accent)}
+.note{width:min(100%,340px);margin:12px 0 0;font-size:.85rem;line-height:1.4;color:var(--muted)}
+.note#scene{color:var(--ink);font-weight:500}
+
+/* Script */
+.doc{width:min(100%,640px);margin-top:28px;display:flex;flex-direction:column;gap:22px}
+.sec{display:flex;flex-direction:column;gap:10px}
+.logline{margin:0;line-height:1.5}
+.beats{display:flex;flex-direction:column;gap:8px}
+.beat{display:grid;grid-template-columns:4.2rem 1fr;gap:12px;padding:12px 14px;background:var(--panel);border:1.5px solid var(--line);border-radius:14px}
+.beat .t{font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums}
+.beat div{min-width:0}
+.beat p{margin:0;line-height:1.45}
+.beat .line{margin-top:4px;color:var(--muted)}
+.beat .line b{color:var(--ink);font-weight:500}
+.prompt{background:var(--panel);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.prompt .hd{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.prompt .hd span{font-weight:600}
+.prompt p{margin:0;font-size:.9rem;line-height:1.5;color:var(--muted);user-select:all}
+
+/* Animation states — .gN = scene N reached, data-scene = current scene */
+#lid{transform-box:fill-box;transform-origin:0% 100%;transition:transform .5s .7s}
+.g1 #lid{transform:rotate(-75deg)}
+#mia .wob{transform-origin:0 0}
+[data-scene="2"] #mia .wob{animation:droop 1.2s ease-in-out both}
+@keyframes droop{0%,100%{transform:rotate(0)}40%,80%{transform:rotate(-3deg) translateY(4px)}}
+#growl,#drop,#mSad{opacity:0;transition:opacity .3s}
+[data-scene="2"] #growl,[data-scene="2"] #drop,[data-scene="2"] #mSad{opacity:1}
+[data-scene="2"] #mHappy{opacity:0}
+[data-scene="2"] #growl{animation:shake .25s 6 .4s}
+@keyframes shake{0%,100%{transform:translateX(0)}50%{transform:translateX(3px)}}
+#leo{transform:translate(470px,470px);transition:transform .9s cubic-bezier(.2,.8,.3,1)}
+.g3 #leo{transform:translate(255px,470px)}
+#leoBox{opacity:0;transition:opacity .4s .6s}
+.g3 #leoBox{opacity:1}
+#sand{opacity:0;transition:opacity .4s .8s}
+.g3 #sand{opacity:1}
+#bigH{transition:transform 1.3s .6s ease-in-out}
+.g4 #bigH{transform:translate(-92px,30px)}
+#smallH{transition:transform 1.3s .6s ease-in-out}
+.g5 #smallH{transform:translate(10px,30px)}
+.cheek{transition:transform .6s,opacity .6s;transform-box:fill-box;transform-origin:center}
+.g5 .cheek{transform:scale(1.5);opacity:1}
+#hearts{opacity:0}
+[data-scene="5"] #hearts{opacity:1;animation:up 2.4s ease-out both}
+@keyframes up{from{transform:translateY(20px);opacity:0}30%{opacity:1}to{transform:translateY(-30px);opacity:1}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition-duration:.01s!important}}
+</style>
+
+<main>
+<h1>Love Is… Episode 2: Shared Lunch</h1>
+<p class="sub">Animated preview · 25 seconds</p>
+
+<div class="stage" id="stage" data-scene="0">
+<div class="tag">L<b>♥</b>VE iS...</div>
+<svg viewBox="0 0 360 640" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Chibi animation: Leo shares his sandwich with Mia at lunch">
+<defs>
+<linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbe9d6"/><stop offset="1" stop-color="#f3e6f2"/></linearGradient>
+<path id="hp" d="M0 4 C-10 -6 -4 -14 0 -8 C4 -14 10 -6 0 4Z"/>
+</defs>
+<rect width="360" height="640" fill="url(#wall)"/>
+<!-- window -->
+<rect x="200" y="90" width="130" height="150" rx="10" fill="#bfe0f5" stroke="#fff" stroke-width="8"/>
+<circle cx="295" cy="125" r="16" fill="#ffe08a"/>
+<ellipse cx="240" cy="200" rx="30" ry="12" fill="#fff" opacity=".9"/>
+<path d="M265 90 V240 M200 165 H330" stroke="#fff" stroke-width="5"/>
+<!-- bunting -->
+<path d="M0 60 Q90 95 180 60" stroke="#c9a27a" stroke-width="2" fill="none"/>
+<polygon points="20,66 40,72 28,92" fill="#f58aa8"/><polygon points="60,76 82,80 68,100" fill="#8fb8e8"/><polygon points="104,79 126,78 116,100" fill="#ffd27a"/><polygon points="146,72 166,64 160,88" fill="#a9d8b8"/>
+<rect y="500" width="360" height="140" fill="#f4d5ca"/>
+<rect y="500" width="360" height="6" fill="#e6b9ab"/>
+
+<g id="mia"><g class="wob">
+<path d="M-42 -90 Q-44 -142 0 -142 Q44 -142 42 -90 L46 -40 Q30 -30 28 -60 L-28 -60 Q-30 -30 -46 -40Z" fill="#4a2f2a"/>
+<rect x="-27" y="-66" width="54" height="56" rx="22" fill="#f4a6b8"/>
+<circle cy="-92" r="36" fill="#ffe3d0"/>
+<path d="M-36 -98 Q-30 -132 0 -130 Q30 -132 36 -98 Q20 -112 0 -108 Q-20 -112 -36 -98Z" fill="#4a2f2a"/>
+<rect x="14" y="-120" width="14" height="6" rx="3" fill="#ff8fb1" transform="rotate(-20 21 -117)"/>
+<ellipse cx="-13" cy="-88" rx="4.5" ry="6.5" fill="#2b1a17"/><ellipse cx="13" cy="-88" rx="4.5" ry="6.5" fill="#2b1a17"/>
+<circle cx="-11.5" cy="-90.5" r="1.8" fill="#fff"/><circle cx="14.5" cy="-90.5" r="1.8" fill="#fff"/>
+<circle class="cheek" cx="-24" cy="-78" r="6" fill="#ff9fb0" opacity=".6"/><circle class="cheek" cx="24" cy="-78" r="6" fill="#ff9fb0" opacity=".6"/>
+<path id="mHappy" d="M-6 -74 Q0 -69 6 -74" stroke="#c4574f" fill="none" stroke-width="2.5" stroke-linecap="round"/>
+<path id="mSad" d="M-6 -70 Q0 -75 6 -70" stroke="#c4574f" fill="none" stroke-width="2.5" stroke-linecap="round"/>
+<path id="drop" d="M34 -112 Q40 -100 34 -96 Q28 -100 34 -112Z" fill="#9fd3f2"/>
+</g></g>
+
+<g id="leo">
+<rect x="-27" y="-66" width="54" height="56" rx="22" fill="#8fb8e8"/>
+<path d="M0 -42 C-9 -50 -4 -57 0 -52 C4 -57 9 -50 0 -42Z" fill="#fff"/>
+<circle cy="-92" r="36" fill="#ffe3d0"/>
+<path d="M-38 -96 Q-40 -134 -14 -132 L-10 -148 L2 -134 L14 -150 L20 -132 Q42 -130 38 -96 Q24 -112 0 -108 Q-24 -110 -38 -96Z" fill="#3a2a26"/>
+<ellipse cx="-13" cy="-90" rx="4.5" ry="6.5" fill="#2b1a17"/><ellipse cx="13" cy="-90" rx="4.5" ry="6.5" fill="#2b1a17"/>
+<circle cx="-11.5" cy="-92.5" r="1.8" fill="#fff"/><circle cx="14.5" cy="-92.5" r="1.8" fill="#fff"/>
+<circle cx="-24" cy="-78" r="6" fill="#ff9fb0" opacity=".55"/><circle cx="24" cy="-78" r="6" fill="#ff9fb0" opacity=".55"/>
+<path d="M-9 -76 Q0 -62 9 -76Z" fill="#c4574f"/><path d="M-5 -71 Q0 -66 5 -71Z" fill="#ff9fb0"/>
+</g>
+
+<!-- table drawn over the characters' lower bodies -->
+<rect x="24" y="414" width="312" height="16" rx="6" fill="#e9b98f"/>
+<rect x="34" y="430" width="292" height="70" fill="#d9a074"/>
+<rect x="34" y="430" width="292" height="6" fill="#c98f63"/>
+
+<!-- Mia's lunchbox -->
+<g id="miaBox">
+<rect x="82" y="390" width="56" height="26" rx="5" fill="#f58aa8"/>
+<rect x="87" y="390" width="46" height="5" fill="#c96a88"/>
+<rect id="lid" x="80" y="382" width="60" height="9" rx="4" fill="#e8658a"/>
+</g>
+<text id="growl" x="40" y="370" font-family="Fredoka,sans-serif" font-size="16" font-weight="600" fill="#9a7bb0">grrrumble~</text>
+
+<!-- Leo's lunchbox -->
+<rect id="leoBox" x="232" y="392" width="54" height="24" rx="5" fill="#6f9fd6"/>
+
+<!-- sandwich: big half and small half -->
+<g id="sand" transform="translate(205,368)">
+<g id="bigH"><rect x="-32" y="-6" width="34" height="10" rx="4" fill="#f2c27a"/><rect x="-33" y="-10" width="36" height="5" rx="2" fill="#8cc97a"/><rect x="-31" y="-13" width="32" height="4" fill="#ffd95e"/><rect x="-32" y="-24" width="34" height="12" rx="5" fill="#f7d9a0" stroke="#d9a45c" stroke-width="2"/></g>
+<g id="smallH"><rect x="4" y="-6" width="20" height="10" rx="4" fill="#f2c27a"/><rect x="3" y="-10" width="22" height="5" rx="2" fill="#8cc97a"/><rect x="5" y="-13" width="18" height="4" fill="#ffd95e"/><rect x="4" y="-24" width="20" height="12" rx="5" fill="#f7d9a0" stroke="#d9a45c" stroke-width="2"/></g>
+</g>
+
+<g id="hearts"><use href="#hp" fill="#ff8fb1" transform="translate(150,300) scale(1.6)"/><use href="#hp" fill="#ffb3c8" transform="translate(205,285) scale(1.1)"/><use href="#hp" fill="#e8495f" transform="translate(180,320) scale(1.3)"/></g>
+</svg>
+<div class="cap" id="cap"></div>
+<div class="card" id="card"><div class="ep" id="cardEp"></div><div class="big" id="cardBig"></div><div class="next" id="cardNext"></div></div>
+<div class="bar" id="bar"></div>
+</div>
+
+<div class="ctl">
+<button id="play">Play</button>
+<button id="restart" class="alt">Restart</button>
+<input type="range" id="seek" min="0" max="25" step="0.1" value="0" aria-label="Timeline">
+</div>
+<p class="note" id="scene"></p>
+<p class="note">Rough motion preview for pacing and story. The final look comes from the character sheet and image prompts.</p>
+
+<div class="doc">
+<section class="sec">
+<h2>Story</h2>
+<p class="logline">The day after they meet, Mia opens her lunchbox and finds it empty. Leo sits down beside her, breaks his sandwich in two, and gives her the bigger half.</p>
+</section>
+
+<section class="sec">
+<h2>Beat sheet</h2>
+<div class="beats" id="beats"></div>
+</section>
+
+<section class="sec">
+<h2>Image prompts</h2>
+<div class="beats" id="prompts"></div>
+</section>
+</div>
+</main>
+
+<script>
+const T=[0,2,6,10,14,18,22],END=25;
+const SCENES=[
+ {t:"0–2s",shot:"Title card",act:"Title card with the episode name.",cap:""},
+ {t:"2–6s",shot:"Wide · lunch table",act:"Mia sits at the lunch table, happy, and pops open her pink lunchbox.",cap:"Lunch time!"},
+ {t:"6–10s",shot:"Wide · Mia",act:"The box is empty. Her smile drops, a sweat drop appears and her stomach growls.",cap:"…I forgot to pack it."},
+ {t:"10–14s",shot:"Two-shot",act:"Leo slides in beside her with his blue lunchbox and holds up his sandwich.",cap:"Want half?"},
+ {t:"14–18s",shot:"Close on sandwich",act:"He breaks it unevenly and passes the bigger piece to Mia.",cap:"You take the big one."},
+ {t:"18–22s",shot:"Two-shot",act:"They eat side by side. Mia blushes and hearts float up between them.",cap:"Thanks, Leo."},
+ {t:"22–25s",shot:"Caption card",act:"End card with the moral, plus a teaser for the next episode.",cap:""}
+];
+const PROMPTS=[
+ ["Establishing shot","Cute chibi anime style, soft pastel palette, vertical 9:16. A sunny school lunchroom with a wooden table, a bright window and colorful paper bunting. Mia, a chibi girl with long brown hair, a pink hair clip, a pink top and rosy cheeks, sits at the table smiling at a closed pink lunchbox. Warm afternoon light, clean line art."],
+ ["Empty lunchbox","Cute chibi anime style, pastel colors, vertical 9:16. Close-up of Mia (long brown hair, pink hair clip, pink top) staring into an open, empty pink lunchbox with a worried face, a big blue sweat drop and the comic text \"grrrumble~\" floating beside her. Soft lighting, lunchroom background."],
+ ["Want half?","Cute chibi anime style, pastel colors, vertical 9:16. Leo, a chibi boy with spiky dark brown hair, a light blue shirt with a small white heart and a big open smile, leans in next to Mia at a lunch table and holds out a sandwich. Mia looks up, surprised. Warm, friendly mood."],
+ ["The bigger half","Cute chibi anime style, pastel colors, vertical 9:16. Close-up of hands breaking a sandwich with lettuce and cheese into two uneven pieces. Leo's hand passes the bigger piece toward Mia. Soft focus lunchroom background, gentle sparkles."],
+ ["Eating together","Cute chibi anime style, pastel colors, vertical 9:16. Mia and Leo sit side by side at a lunch table eating sandwich halves. Mia blushes with rosy cheeks, small pink hearts float between them, Leo grins. Sunny window behind them, cozy and sweet."],
+ ["Caption card","Soft pink pastel background with simple hand-lettered text: \"Love is… giving the bigger half.\" A small sandwich doodle with a heart, minimalist, vertical 9:16."]
+];
+const $=id=>document.getElementById(id);
+$('beats').innerHTML=SCENES.map(s=>`<div class="beat"><span class="t">${s.t}</span><div><p>${s.shot}: ${s.act}</p>${s.cap?`<p class="line">On screen: <b>"${s.cap}"</b></p>`:''}</div></div>`).join('');
+$('prompts').innerHTML=PROMPTS.map((p,i)=>`<div class="prompt"><div class="hd"><span>${p[0]}</span><button class="alt sm" id="copy${i}" data-i="${i}">Copy</button></div><p id="ptext${i}">${p[1]}</p></div>`).join('');
+$('prompts').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  const i=b.dataset.i,txt=PROMPTS[i][1];
+  const done=()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1500)};
+  const sel=()=>{const r=document.createRange();r.selectNodeContents($('ptext'+i));const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Selected';setTimeout(()=>b.textContent='Copy',1500)};
+  try{navigator.clipboard.writeText(txt).then(done,sel)}catch(_){sel()}
+});
+
+const stage=$('stage'),card=$('card');
+let t=0,playing=false,last=0,cur=-1;
+function render(){
+  let s=0;T.forEach((v,i)=>{if(t>=v)s=i});
+  if(s!==cur){
+    cur=s;stage.dataset.scene=s;
+    stage.className='stage'+Array.from({length:s},(_,i)=>' g'+(i+1)).join('');
+    $('cap').textContent=SCENES[s].cap;
+    $('scene').textContent=SCENES[s].t+' · '+SCENES[s].shot;
+    const show=s===0||s===6;
+    card.classList.toggle('on',show);
+    $('cardEp').textContent=s===0?'Episode 2':'';
+    $('cardBig').innerHTML=s===0?'Shared Lunch':'Love is...<br>giving the bigger half.';
+    $('cardNext').textContent=s===6?'Next: Rainy Day':'';
+  }
+  $('bar').style.width=(t/END*100)+'%';
+  $('seek').value=t;
+  $('play').textContent=playing?'Pause':(t>=END?'Replay':'Play');
+}
+function tick(now){
+  if(playing){t+=(now-last)/1000;if(t>=END){t=END;playing=false}}
+  last=now;render();requestAnimationFrame(tick);
+}
+$('play').onclick=()=>{if(t>=END){t=0;cur=-1}playing=!playing};
+$('restart').onclick=()=>{t=0;cur=-1;playing=true};
+$('seek').oninput=e=>{t=parseFloat(e.target.value);cur=-1;playing=false};
+requestAnimationFrame(n=>{last=n;tick(n)});
+</script>
